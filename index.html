@@ -175,7 +175,7 @@ const claimOBtn = qs('#claimO');
 const newGameBtn = qs('#newGameBtn');
 
 const uid = (crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random())).replace(/[^a-zA-Z0-9-]/g,'');
-nameInput.value = localStorage.getItem('ttt_name') || ''; = localStorage.getItem('ttt_name') || ''; = localStorage.getItem('ttt_name') || '';
+nameInput.value = localStorage.getItem('ttt_name') || '';
 saveNameBtn.onclick = () => { localStorage.setItem('ttt_name', nameInput.value.trim()); toast('نام ذخیره شد.'); }
 
 let roomId = null;
@@ -280,11 +280,14 @@ function renderRoom(data){
   pX.textContent = data.players?.X?.name || '—';
   pO.textContent = data.players?.O?.name || '—';
 
-  // If both players are present but status still waiting, promote to playing (self-heal)
   const bothPresent = !!(data.players?.X && data.players?.O);
   if(firebaseReady && data.state?.status === 'waiting' && bothPresent && roomId){
     roomRef(roomId).child('state/status').set('playing');
   }
+
+  // toggle claim buttons
+  claimXBtn.classList.toggle('hidden', !!data.players?.X || !!myMark);
+  claimOBtn.classList.toggle('hidden', !!data.players?.O || !!myMark);
 
   // Build board UI
   boardEl.innerHTML = '';
@@ -318,7 +321,6 @@ function renderRoom(data){
   }
   statusArea.appendChild(div);
 
-  // Enable/disable New Game
   newGameBtn.disabled = !bothPresent;
 }
 
@@ -388,6 +390,21 @@ async function leaveRoom(){
   setUI(false);
 }
 
+async function claimSeat(mark){
+  if(needFirebase()) return;
+  if(!roomId) return;
+  const ref = roomRef(roomId).child('players');
+  const name = (nameInput.value || 'بازیکن').trim();
+  await ref.transaction(players => {
+    if(!players) return players;
+    if(players[mark] === null){
+      players[mark] = { id: uid, name };
+      myMark = mark;
+    }
+    return players;
+  });
+}
+
 // ===== Events =====
 createBtn.onclick = () => createRoom();
 joinBtn.onclick = () => {
@@ -401,6 +418,8 @@ copyBtn.onclick = async () => {
 }
 leaveBtn.onclick = () => leaveRoom();
 newGameBtn.onclick = () => newGame();
+claimXBtn.onclick = () => claimSeat('X');
+claimOBtn.onclick = () => claimSeat('O');
 
 // ===== Deep link ( ?room=CODE ) =====
 (function initFromURL(){
