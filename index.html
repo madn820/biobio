@@ -7,307 +7,115 @@
   <meta name="description" content="Direct downloads for PDF and DWG CAD files. Preview PDFs online and get one‑click downloads." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg:#ECE6D4;                  /* Eggshell background */
-      --egg:#ECE6D4;                 /* legacy var (not used for text now) */
-      --egg-rgb:236,230,212;
-      --ash:#9D9D8C;                 /* Ash Gray */
+      --bg:#ECE6D4;
+      --ash:#9D9D8C;
       --ash-rgb:157,157,140;
-      --panel:rgba(var(--ash-rgb),.26); /* lighter panels */
-      --text:#111111;                /* all text black */
-      --muted:#3b3f38;               /* darker neutral for subtle text */
-      --accent:#8D9987;              /* lighter olive */
-      --accent-rgb:141,153,135;      
+      --text:#111111;
+      --accent:#8D9987;
+      --accent-rgb:141,153,135;
       --border:rgba(0,0,0,.12);
-      --ring:rgba(141,153,135,.35);
       --shadow:0 10px 20px rgba(141,153,135,.16);
     }
-    
     *{box-sizing:border-box}
-    html,body{margin:0;padding:0;height:100%}
-    body{font-family:"Vazirmatn",system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Noto Sans",sans-serif;background:var(--bg);color:var(--text)}
-    a{color:inherit;text-decoration:none}
-    .wrap{max-width:1080px;margin:0 auto;padding:24px 16px 40px;position:relative}
-    .backdrop{position:fixed;inset:0;pointer-events:none;z-index:-1;background:radial-gradient(1100px 520px at 90% -10%, rgba(157,157,140,.20), transparent 60%),radial-gradient(900px 700px at -10% 40%, rgba(210,206,190,.35), transparent 60%),radial-gradient(700px 500px at 110% 110%, rgba(189,186,170,.22), transparent 60%);filter:saturate(105%) blur(1px)}
-    header.hero{position:relative;border-radius:28px;padding:28px;background:var(--panel);border:1px solid var(--border);backdrop-filter:blur(10px);box-shadow:var(--shadow)}
-    .hero-top{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:14px}
-    .brand{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
-    .logo{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,#8D9987,#A9B3A7);display:grid;place-items:center;box-shadow:0 8px 20px rgba(141,153,135,.25);margin:0 auto}
-    .logo svg{width:30px;height:30px;fill:var(--text)}
-    h1{font-size:24px;margin:0 0 4px;color:var(--text)}
-    .hint{color:var(--muted);margin:0;font-size:14px}
-    .hero-actions{display:flex;gap:10px;flex-wrap:wrap}
-    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;border:1px solid rgba(var(--accent-rgb),.22);background:rgba(var(--accent-rgb),.12);cursor:pointer;transition:transform .12s ease, box-shadow .12s ease, background .12s ease; color:var(--text)}
-    .btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(141,153,135,.25)}
-    .btn.primary{background:var(--accent);color:var(--text);border-color:transparent;font-weight:700}
-    .btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(111,123,106,.25)}
-    .btn.primary{background:var(--accent);color:#F6F3EA;border-color:transparent;font-weight:700}
-    .btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(111,123,106,.25)}
-    .btn.primary{background:var(--accent);color:#F6F3EA;border-color:transparent;font-weight:700}
-    .btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(119,114,100,.25)}
-    .btn.primary{background:var(--accent);color:#1f1f1a;border-color:transparent;font-weight:700}
-    .seg{display:flex;gap:8px;flex-wrap:wrap}
-    .seg .chip{padding:8px 10px;border-radius:999px;border:1px solid rgba(var(--ash-rgb),.3);background:rgba(var(--ash-rgb),.18);cursor:pointer;font-size:13px;color:var(--text)}
-    .seg .chip.active{outline:2px solid var(--ring);background:rgba(var(--ash-rgb),.28)}
-    .search{position:relative;flex:1;min-width:220px}
-    .search input{width:100%;padding:12px 38px 12px 12px;border-radius:12px;border:1px solid var(--border);background:#fff;color:var(--text);outline:none}
-    .search svg{position:absolute;right:10px;top:50%;transform:translateY(-50%);opacity:.55}
-    .grid{display:grid;grid-template-columns:repeat(1,minmax(0,1fr));gap:14px;margin-top:16px}
-    @media (min-width:640px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
-    @media (min-width:980px){.grid{grid-template-columns:repeat(3,minmax(0,1fr));}}
-    .panel{margin-top:22px}
-    .section-title{font-size:16px;margin:0 0 10px;color:var(--text)}
-    .card{background:rgba(var(--ash-rgb),.18);border:1px solid rgba(var(--ash-rgb),.35);border-radius:18px;padding:16px;display:flex;gap:12px;align-items:flex-start;backdrop-filter:blur(8px);box-shadow:var(--shadow);transition:transform .12s ease, box-shadow .12s ease}
-    .card:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(141,153,135,.24)}
-    .card:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(111,123,106,.28)}
-    .card:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(111,123,106,.28)}
-    .icon{flex:0 0 50px;width:50px;height:50px;border-radius:14px;display:grid;place-items:center;background:rgba(var(--accent-rgb),.08);border:1px solid rgba(var(--accent-rgb),.22);color:var(--accent)}
-    .title{font-weight:700;margin:0 0 6px;font-size:16px;word-break:break-word;color:var(--text)}
-    .meta{color:var(--text);font-size:12px;margin:0 0 10px;display:flex;gap:8px;flex-wrap:wrap;opacity:.85}
-    .badge{padding:3px 8px;border-radius:999px;border:1px solid rgba(var(--ash-rgb),.35);background:rgba(var(--ash-rgb),.16);font-size:11px;color:var(--text)}
-    .actions{display:flex;gap:8px;flex-wrap:wrap}
-    .btn.small{padding:8px 10px;border-radius:10px;font-size:13px}
-    footer{margin:26px 0;color:#5f655c;font-size:12px;text-align:center}
-    
-    dialog{border:none;border-radius:16px;max-width:1000px;width:min(95vw,1000px);height:85vh;padding:0;overflow:hidden;background:#000}
-    dialog::backdrop{background:rgba(0,0,0,.45)}
-    .viewer-head{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:rgba(var(--ash-rgb),.25);color:var(--text);border-bottom:1px solid rgba(var(--ash-rgb),.35)}
-    .viewer-body{height:calc(85vh - 48px);}
-    .viewer-body iframe{width:100%;height:100%;border:0;background:#111}
-    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-    /* layout: big DWG on top + three PDF squares below */
-    .grid-top{display:grid;grid-template-columns:1fr;gap:16px;margin-top:16px}
-    .card.large{display:flex;align-items:center;justify-content:space-between;min-height:220px;padding:24px 20px}
-    .card.large .title{font-size:20px}
-    .grid-squares{display:grid;grid-template-columns:repeat(1,minmax(0,1fr));gap:14px;margin-top:16px}
-    @media (min-width:640px){.grid-squares{grid-template-columns:repeat(2,minmax(0,1fr));}}
-    @media (min-width:980px){.grid-squares{grid-template-columns:repeat(3,minmax(0,1fr));}}
-    .card.square{aspect-ratio:1/1;display:flex;flex-direction:column;justify-content:center}
-    .card.square .meta{justify-content:center}
-    .card.square .actions{justify-content:center}
-    /* layout: big DWG on top + three PDF squares below */
-    .grid-top{display:grid;grid-template-columns:1fr;gap:16px;margin-top:16px}
-    .card.large{display:flex;align-items:center;justify-content:space-between;min-height:220px;padding:24px 20px}
-    .card.large .title{font-size:20px}
-    .grid-squares{display:grid;grid-template-columns:repeat(1,minmax(0,1fr));gap:14px;margin-top:16px}
-    @media (min-width:640px){.grid-squares{grid-template-columns:repeat(2,minmax(0,1fr));}}
-    @media (min-width:980px){.grid-squares{grid-template-columns:repeat(3,minmax(0,1fr));}}
-    .card.square{aspect-ratio:1/1;display:flex;flex-direction:column;justify-content:center}
-    .card.square .meta{justify-content:center}
-    .card.square .actions{justify-content:center}
-
-    /* center align all text */
-    body, h1, h2, h3, p, .title, .meta, .hint, .badge, .section-title, .viewer-head strong{ text-align:center; }
-    .content{ text-align:center; }
-    .card .actions{ justify-content:center; }
-    .seg{ justify-content:center; }
-    .brand{ justify-content:center; }
-      /* ==== Center everything (overrides) ==== */
-    body{ text-align:center !important; }
-    .title,.meta,.hint,.section-title,footer p,.content{ text-align:center !important; margin-left:auto; margin-right:auto; }
-    .brand{ justify-content:center !important; }
-    .seg{ justify-content:center !important; }
-    .card,.card.large{ align-items:center !important; justify-content:center !important; flex-direction:column !important; text-align:center !important; }
-    .card .actions{ justify-content:center !important; }
-    .card.square .meta{ justify-content:center !important; }
-    .icon{ margin:0 auto 8px !important; }
-    /* === Center alignment overrides === */
-    .hero-top{justify-content:center !important;}
-    .brand{justify-content:center !important; flex-direction:column !important; text-align:center !important;}
-    .section-title{ text-align:center !important; }
-    .grid-top,.grid-squares{ text-align:center !important; }
-    .card,.card.large,.card.square{ flex-direction:column !important; align-items:center !important; justify-content:center !important; text-align:center !important; }
-    .card .content{ width:100%; text-align:center !important; }
-    .card .meta,.card .actions{ justify-content:center !important; }
-    .icon{ margin:0 auto 8px !important; }
-    /* ==== Center hero and filter chips strictly ==== */
-    header.hero{ text-align:center !important; }
-    .hero-top{ justify-content:center !important; align-items:center !important; }
-    .brand{ flex-direction:column !important; align-items:center !important; justify-content:center !important; text-align:center !important; margin:0 auto !important; }
-    .seg{ width:100% !important; display:flex !important; justify-content:center !important; align-items:center !important; gap:8px }
-    .seg .chip{ margin:2px 4px !important; }
-    /* فاصلهٔ امن از لبهٔ پایین مرورگر */
-    body{ padding-bottom:72px !important; }
-    footer{ margin-bottom:56px !important; }
-    /* فاصلهٔ امن از لبهٔ پایین مرورگر */
-    body{ padding-bottom:72px !important; }
-    footer{ margin-bottom:56px !important; }
-    /* جداکننده بالای فوتر */
-    footer{ border-top:1px solid rgba(var(--ash-rgb),.35) !important; padding-top:16px !important; }
-    /* فاصلهٔ امن از لبهٔ پایین مرورگر + فوتر واضح */
-    body{ padding-bottom:72px !important; }
-    .site-footer{ margin:28px 0 40px 0; padding-top:16px; border-top:2px solid #6F7B6A; text-align:center; font-size:16px; color:#6F7B6A; }
-    .site-footer a{ font-weight:800; color:#6F7B6A; text-decoration:none; }
+    body{margin:0;padding:0;font-family:"Vazirmatn",sans-serif;background:var(--bg);color:var(--text);text-align:center}
+    a{text-decoration:none;color:inherit}
+    .wrap{max-width:1080px;margin:0 auto;padding:24px}
+    header.hero{border-radius:28px;padding:28px;background:rgba(var(--ash-rgb),.26);border:1px solid var(--border);box-shadow:var(--shadow)}
+    .logo{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,#8D9987,#A9B3A7);display:grid;place-items:center;margin:0 auto 16px}
+    .logo svg{width:28px;height:28px;fill:#fff}
+    h1{margin:0;font-size:24px}
+    .card{background:rgba(var(--ash-rgb),.18);border:1px solid rgba(var(--ash-rgb),.35);border-radius:18px;padding:20px;margin-top:16px;box-shadow:var(--shadow)}
+    .card .title{margin:0 0 10px;font-weight:700;font-size:18px}
+    .badge{padding:3px 8px;border-radius:999px;border:1px solid rgba(var(--ash-rgb),.35);background:rgba(var(--ash-rgb),.16);font-size:11px}
+    .actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+    .btn{padding:8px 12px;border-radius:10px;border:1px solid rgba(var(--accent-rgb),.22);background:rgba(var(--accent-rgb),.12);cursor:pointer}
+    .btn.primary{background:var(--accent);color:#fff;font-weight:700}
+    .grid-rects{display:grid;grid-template-columns:repeat(1,1fr);gap:16px;margin-top:16px}
+    @media(min-width:768px){.grid-rects{grid-template-columns:repeat(2,1fr);}}
+    footer{margin:40px 0 56px;border-top:2px solid #6F7B6A;padding-top:16px;font-size:16px;color:#6F7B6A}
+    footer a{font-family:'Playfair Display',serif;font-size:22px;font-weight:600;color:#6F7B6A}
   </style>
 </head>
 <body>
-  <div class="backdrop" aria-hidden="true"></div>
   <div class="wrap">
     <header class="hero">
-      <div class="hero-top">
-        <div class="brand">
-          <div class="logo" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M12 2l9 5v10l-9 5-9-5V7l9-5zm0 2.2L5 7.25v9.5L12 18.8l7-2.05v-9.5L12 4.2z"/></svg>
-          </div>
-          <div>
-            <h1>دانلود نقشه‌ها و فایل‌ها</h1>
-            
-          </div>
-        </div>
-        
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 2l9 5v10l-9 5-9-5V7l9-5zm0 2.2L5 7.25v9.5L12 18.8l7-2.05v-9.5L12 4.2z"/></svg>
       </div>
-      
+      <h1>پروژه وشاره گروه پنج</h1>
     </header>
 
-    <main id="files" class="panel">
-      
-      <div class="grid-top">
-        <!-- بزرگ: DWG -->
-        <article class="card large" data-type="dwg" data-title="فایل کد برای تمام نقشه ها">
-          
-          <div class="content">
-            <h3 class="title">فایل کد برای تمام نقشه ها</h3>
-            <p class="meta">
-              <span class="badge">DWG</span>
-              
-            </p>
-            <div class="actions">
-              <a class="btn small" href="files/cad-all-plans.dwg" download>دانلود</a>
-              <button class="btn small js-copy" data-url="files/cad-all-plans.dwg">کپی لینک</button>
-            </div>
-          </div>
-        </article>
-      </div>
+    <main id="files">
+      <!-- DWG بالا -->
+      <article class="card" data-type="dwg">
+        <h3 class="title">فایل کد برای تمام نقشه ها</h3>
+        <p class="meta"><span class="badge">DWG</span></p>
+        <div class="actions">
+          <a class="btn" href="files/cad-all-plans.dwg" download>دانلود</a>
+          <button class="btn js-copy" data-url="files/cad-all-plans.dwg">کپی لینک</button>
+        </div>
+      </article>
 
-      <!-- پایین: سه مربع برای PDFها -->
-      <div class="grid-squares">
-        <!-- 1) وسط شدن کروکی: ابتدا کامل نقشه‌ها می‌آید تا کروکی در ستون دوم قرار گیرد -->
-        <article class="card square" data-type="pdf" data-title="فایل پی دی اف کامل نقشه ها">
-          
-          <div class="content">
-            <h3 class="title">فایل پی دی اف کامل نقشه ها</h3>
-            <p class="meta">
-              <span class="badge">PDF</span>
-            </p>
-            <div class="actions">
-              <a class="btn small primary js-preview" href="files/full-drawings.pdf" data-type="pdf">نمایش آنلاین</a>
-              <a class="btn small" href="files/full-drawings.pdf" download>دانلود</a>
-              <button class="btn small js-copy" data-url="files/full-drawings.pdf">کپی لینک</button>
-            </div>
+      <!-- دو مستطیل برای PDFها -->
+      <div class="grid-rects">
+        <article class="card" data-type="pdf">
+          <h3 class="title">فایل پی دی اف کامل نقشه ها</h3>
+          <p class="meta"><span class="badge">PDF</span></p>
+          <div class="actions">
+            <a class="btn primary js-preview" href="files/full-drawings.pdf">نمایش آنلاین</a>
+            <a class="btn" href="files/full-drawings.pdf" download>دانلود</a>
+            <button class="btn js-copy" data-url="files/full-drawings.pdf">کپی لینک</button>
           </div>
         </article>
 
-        <!-- 2) کروکی در وسط -->
-        <article class="card square" data-type="pdf" data-title="فایل پی دی اف کروکی،ترسیم اولیه،مثلث بندی">
-          
-          <div class="content">
-            <h3 class="title">فایل پی دی اف کروکی،ترسیم اولیه،مثلث بندی</h3>
-            <p class="meta">
-              <span class="badge">PDF</span>
-            </p>
-            <div class="actions">
-              <a class="btn small primary js-preview" href="files/sketch-triangulation.pdf" data-type="pdf">نمایش آنلاین</a>
-              <a class="btn small" href="files/sketch-triangulation.pdf" download>دانلود</a>
-              <button class="btn small js-copy" data-url="files/sketch-triangulation.pdf">کپی لینک</button>
-            </div>
-          </div>
-        </article>
-
-        <!-- 3) آلبوم عکس‌های فنی در ستون سوم -->
-        <article class="card square" data-type="pdf" data-title="پی دی اف آلبوم عکس های فنی">
-          
-          <div class="content">
-            <h3 class="title">پی دی اف آلبوم عکس های فنی</h3>
-            <p class="meta">
-              <span class="badge">PDF</span>
-            </p>
-            <div class="actions">
-              <a class="btn small primary js-preview" href="files/technical-photos-album.pdf" data-type="pdf">نمایش آنلاین</a>
-              <a class="btn small" href="files/technical-photos-album.pdf" download>دانلود</a>
-              <button class="btn small js-copy" data-url="files/technical-photos-album.pdf">کپی لینک</button>
-            </div>
+        <article class="card" data-type="pdf">
+          <h3 class="title">فایل پی دی اف کروکی،ترسیم اولیه،مثلث بندی و البوم عکس هاس فنی</h3>
+          <p class="meta"><span class="badge">PDF</span></p>
+          <div class="actions">
+            <a class="btn primary js-preview" href="files/sketch-triangulation.pdf">نمایش آنلاین</a>
+            <a class="btn" href="files/sketch-triangulation.pdf" download>دانلود</a>
+            <button class="btn js-copy" data-url="files/sketch-triangulation.pdf">کپی لینک</button>
           </div>
         </article>
       </div>
     </main>
 
-      <footer class="site-footer">
-        <p><a href="https://www.instagram.com/jarcoofficial?igsh=NGFmMWptd3o5ejUy" target="_blank">jarcoofficial</a></p>
-      </footer>
-
-    
+    <footer>
+      <p><a href="https://www.instagram.com/jarcoofficial?igsh=NGFmMWptd3o5ejUy" target="_blank">jarcoofficial</a></p>
+    </footer>
   </div>
 
-  <dialog id="viewer" aria-label="پیش‌نمایش PDF">
-    <div class="viewer-head">
-      <strong>پیش‌نمایش PDF</strong>
-      <button class="btn small" id="closeViewer" aria-label="بستن">بستن ✕</button>
-    </div>
+  <dialog id="viewer">
     <div class="viewer-body">
       <iframe id="frame" title="PDF Viewer"></iframe>
     </div>
   </dialog>
 
   <script>
-    const viewer = document.getElementById('viewer');
-    const frame = document.getElementById('frame');
-    const closeBtn = document.getElementById('closeViewer');
-    const chips = document.querySelectorAll('.chip');
-    const cards = [...document.querySelectorAll('.card')];
-
-    // PDF preview modal (no theme toggle)
-    function openPreview(url){
-      try{
-        frame.src = url;
-        if (typeof viewer.showModal === 'function') {
-          viewer.showModal();
-        } else {
-          window.open(url, '_blank');
-        }
-      }catch(e){
-        window.open(url, '_blank');
-      }
-    }
+    const viewer=document.getElementById('viewer');
+    const frame=document.getElementById('frame');
     document.querySelectorAll('.js-preview').forEach(el=>{
-      el.addEventListener('click', (ev)=>{
+      el.addEventListener('click',ev=>{
         ev.preventDefault();
-        openPreview(el.getAttribute('href'));
+        frame.src=el.getAttribute('href');
+        if(typeof viewer.showModal==='function')viewer.showModal();
+        else window.open(el.getAttribute('href'),'_blank');
       });
     });
-    closeBtn.addEventListener('click', ()=>{
-      frame.src = 'about:blank';
-      viewer.close();
-    });
-
-    // Copy direct link buttons
     document.querySelectorAll('.js-copy').forEach(btn=>{
-      btn.addEventListener('click', async ()=>{
+      btn.addEventListener('click',async()=>{
         try{
-          const url = btn.dataset.url;
-          const abs = new URL(url, window.location.href).href;
+          const url=btn.dataset.url;
+          const abs=new URL(url,window.location.href).href;
           await navigator.clipboard.writeText(abs);
-          btn.textContent = 'کپی شد ✔';
-          setTimeout(()=>{ btn.textContent = 'کپی لینک'; }, 1500);
-        }catch(e){ alert('کپی نشد؛ دستی کپی کنید.'); }
+          btn.textContent='کپی شد ✔';
+          setTimeout(()=>{btn.textContent='کپی لینک';},1500);
+        }catch(e){alert('کپی نشد؛ دستی کپی کنید.');}
       });
     });
-
-    // Filter by type (tabs only)
-    function applyFilters(){
-      const activeChip = document.querySelector('.chip.active');
-      const typeFilter = activeChip ? activeChip.dataset.filter : 'all';
-      cards.forEach(card=>{
-        const t = card.dataset.type;
-        card.style.display = (typeFilter === 'all' || typeFilter === t) ? '' : 'none';
-      });
-    }
-    chips.forEach(c=>c.addEventListener('click', ()=>{
-      chips.forEach(x=>{x.classList.remove('active');x.setAttribute('aria-selected','false');});
-      c.classList.add('active'); c.setAttribute('aria-selected','true');
-      applyFilters();
-    }));
   </script>
 </body>
 </html>
