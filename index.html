@@ -53,6 +53,7 @@
     .banner{padding:10px 12px;border-radius:12px;background:#0f1620;border:1px solid rgba(255,255,255,.08);color:var(--muted);font-size:14px}
     .banner.win{background:linear-gradient(180deg,rgba(31,122,67,.22),rgba(31,122,67,.1));color:#c0ffd9;border-color:rgba(31,122,67,.5)}
     .banner.draw{background:linear-gradient(180deg,rgba(95,109,122,.2),rgba(95,109,122,.1));color:#e2e7ee;border-color:rgba(95,109,122,.4)}
+    .banner.err{background:linear-gradient(180deg,rgba(255,107,107,.18),rgba(255,107,107,.08));color:#ffd7d7;border-color:rgba(255,107,107,.45)}
 
     footer{margin-top:20px;color:var(--muted);font-size:13px;text-align:center}
     .hidden{display:none !important}
@@ -72,7 +73,7 @@
 
   <section class="card" id="lobby">
     <div class="row" style="margin-bottom:12px">
-      <input id="nameInput" class="grow" placeholder="نام شما" />
+      <input id="nameInput" class="grow" placeholder="نام شما (مثلاً: آرم)" />
       <button id="saveNameBtn" class="btn pill">ذخیره نام</button>
     </div>
     <div class="row" style="margin-bottom:10px">
@@ -80,6 +81,7 @@
       <input id="joinCode" placeholder="کد اتاق" style="width:140px" />
       <button id="joinBtn" class="btn secondary">پیوستن</button>
     </div>
+    <div id="warnFirebase" class="banner err hidden">اتصال به Firebase برقرار نیست. لطفاً <b>firebaseConfig</b> و <b>databaseURL</b> را در فایل تنظیم و دوباره بارگذاری کنید.</div>
     <div class="banner">راهنما: «ساخت اتاق» را بزن، لینک دعوت را برای نفر دوم بفرست. یا اگر لینکی گرفتی، فقط بازش کن تا مستقیم وارد اتاق شوی.</div>
   </section>
 
@@ -118,28 +120,36 @@
   </footer>
 </div>
 
-<!-- ✅ Firebase SDK (Compat for simplicity in a single file) -->
+<!-- Firebase SDKs (Compat) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
 <script>
-/**
- * راه‌اندازی سریع
- * 1) در Firebase یک پروژه بسازید و Realtime Database را روی حالت "Start in test mode" ایجاد کنید.
- * 2) پیکربندی زیر را با مقادیر پروژه خود جایگزین کنید.
- * 3) همین فایل index.html را روی هر هاستی مثل GitHub Pages آپلود کنید.
- */
+// ====== تنظیم کانفیگ خودت را اینجا بگذار ======
 const firebaseConfig = {
   apiKey: "AIzaSyCkDGeOz-5X2_txXtZsQrToqdbEW4VuGco",
   authDomain: "xoxo-ddb09.firebaseapp.com",
-  databaseURL: "https://xoxo-ddb09-default-rtdb.firebaseio.com",
+  databaseURL: "https://xoxo-ddb09-default-rtdb.firebaseio.com", // ← مهم
   projectId: "xoxo-ddb09",
   storageBucket: "xoxo-ddb09.firebasestorage.app",
   messagingSenderId: "504695763397",
   appId: "1:504695763397:web:83b66c792e3173389e1bac"
 };
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+
+// ===== راه‌اندازی ایمن با خطایابی =====
+let db = null; let firebaseReady = false;
+(function safeInit(){
+  try{
+    if(!window.firebase) throw new Error('Firebase SDK not loaded');
+    firebase.initializeApp(firebaseConfig);
+    if(!firebaseConfig.databaseURL) throw new Error('Missing databaseURL');
+    db = firebase.database();
+    firebaseReady = true;
+  }catch(err){
+    console.error('Firebase init error:', err);
+    document.getElementById('warnFirebase').classList.remove('hidden');
+  }
+})();
 
 // ===== Helpers =====
 const qs = s => document.querySelector(s);
@@ -160,7 +170,7 @@ const copyBtn = qs('#copyBtn');
 const leaveBtn = qs('#leaveBtn');
 const newGameBtn = qs('#newGameBtn');
 
-const uid = localStorage.getItem('ttt_uid') || (()=>{const id = crypto.randomUUID(); localStorage.setItem('ttt_uid', id); return id;})();
+const uid = localStorage.getItem('ttt_uid') || (()=>{const id = (crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random())).replace(/[^a-zA-Z0-9-]/g,''); localStorage.setItem('ttt_uid', id); return id;})();
 nameInput.value = localStorage.getItem('ttt_name') || '';
 saveNameBtn.onclick = () => { localStorage.setItem('ttt_name', nameInput.value.trim()); toast('نام ذخیره شد.'); }
 
@@ -176,9 +186,10 @@ function randomCode(len=6){
 }
 function roomRef(id){ return db.ref('rooms/'+id); }
 function now(){ return Date.now(); }
-function toast(msg){
-  statusArea.innerHTML = `<div class="banner">${msg}</div>`;
+function toast(msg, cls=''){
+  statusArea.innerHTML = `<div class="banner ${cls}">${msg}</div>`;
 }
+function needFirebase(){ if(!firebaseReady){ toast('اتصال به دیتابیس برقرار نیست؛ تنظیمات Firebase را کامل کن.', 'err'); return true;} return false; }
 
 function setUI(inRoom){
   lobby.classList.toggle('hidden', !!inRoom);
@@ -191,6 +202,7 @@ function currentOrigin(){
 }
 
 async function createRoom(){
+  if(needFirebase()) return;
   const name = (nameInput.value || 'بازیکن').trim();
   localStorage.setItem('ttt_name', name);
   const id = randomCode();
@@ -210,6 +222,7 @@ async function createRoom(){
 }
 
 async function joinRoom(id, name, asCreator=false){
+  if(needFirebase()) return;
   roomId = id;
   setUI(true);
   codeBadge.textContent = 'کد: '+id;
@@ -321,6 +334,7 @@ function winnerOf(board){
 }
 
 async function makeMove(i){
+  if(needFirebase()) return;
   if(!roomId) return;
   const ref = roomRef(roomId).child('state');
   await ref.transaction(st => {
@@ -342,6 +356,7 @@ async function makeMove(i){
 }
 
 async function newGame(){
+  if(needFirebase()) return;
   if(!roomId) return;
   const ref = roomRef(roomId);
   const snap = await ref.once('value');
@@ -353,7 +368,8 @@ async function newGame(){
 }
 
 async function leaveRoom(){
-  if(!roomId) return;
+  if(needFirebase()) { setUI(false); return; }
+  if(!roomId) { setUI(false); return; }
   const ref = roomRef(roomId);
   const role = myMark;
   if(role){ await ref.child('players/'+role).set(null); }
