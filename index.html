@@ -18,6 +18,7 @@
       --accent-rgb:141,153,135;
       --border:rgba(0,0,0,.12);
       --shadow:0 10px 20px rgba(141,153,135,.16);
+      --download:#6F7B6A; /* رنگ جدید برای دکمه دانلود */
     }
     *{box-sizing:border-box}
     body{margin:0;padding:0;font-family:"Vazirmatn",sans-serif;background:var(--bg);color:var(--text);text-align:center}
@@ -32,7 +33,7 @@
     .badge{padding:3px 8px;border-radius:999px;border:1px solid rgba(var(--ash-rgb),.35);background:rgba(var(--ash-rgb),.16);font-size:11px}
     .actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
     .btn{padding:8px 12px;border-radius:10px;border:1px solid rgba(var(--accent-rgb),.22);background:rgba(var(--accent-rgb),.12);cursor:pointer}
-    .btn.primary{background:var(--accent);color:#fff;font-weight:700}
+    .btn.download{background:var(--download);color:#fff;font-weight:700} /* استایل دکمه دانلود */
     .grid-rects{display:grid;grid-template-columns:repeat(1,1fr);gap:16px;margin-top:16px}
     @media(min-width:768px){.grid-rects{grid-template-columns:repeat(2,1fr);}}
     footer{margin:40px 0 56px;border-top:2px solid #6F7B6A;padding-top:16px;font-size:16px;color:#6F7B6A}
@@ -54,7 +55,7 @@
         <h3 class="title">فایل کد برای تمام نقشه ها</h3>
         <p class="meta"><span class="badge">DWG</span></p>
         <div class="actions">
-          <a class="btn" href="files/cad-all-plans.dwg" download>دانلود</a>
+          <a class="btn download" href="files/cad-all-plans.dwg" download>دانلود</a>
           <button class="btn js-copy" data-url="files/cad-all-plans.dwg">کپی لینک</button>
         </div>
       </article>
@@ -65,18 +66,16 @@
           <h3 class="title">فایل پی دی اف کامل نقشه ها</h3>
           <p class="meta"><span class="badge">PDF</span></p>
           <div class="actions">
-            <a class="btn primary js-preview" href="files/full-drawings.pdf">نمایش آنلاین</a>
-            <a class="btn" href="files/full-drawings.pdf" download>دانلود</a>
+            <a class="btn download" href="files/full-drawings.pdf" download>دانلود</a>
             <button class="btn js-copy" data-url="files/full-drawings.pdf">کپی لینک</button>
           </div>
         </article>
 
         <article class="card" data-type="pdf">
-          <h3 class="title">فایل پی دی اف کروکی،ترسیم اولیه،مثلث بندی و البوم عکس هاس فنی</h3>
+          <h3 class="title">فایل پی دی اف کروکی،ترسیم اولیه،مثلث بندی و البوم عکس های فنی</h3>
           <p class="meta"><span class="badge">PDF</span></p>
           <div class="actions">
-            <a class="btn primary js-preview" href="files/sketch-triangulation.pdf">نمایش آنلاین</a>
-            <a class="btn" href="files/sketch-triangulation.pdf" download>دانلود</a>
+            <a class="btn download" href="files/sketch-triangulation.pdf" download>دانلود</a>
             <button class="btn js-copy" data-url="files/sketch-triangulation.pdf">کپی لینک</button>
           </div>
         </article>
@@ -88,23 +87,7 @@
     </footer>
   </div>
 
-  <dialog id="viewer">
-    <div class="viewer-body">
-      <iframe id="frame" title="PDF Viewer"></iframe>
-    </div>
-  </dialog>
-
   <script>
-    const viewer=document.getElementById('viewer');
-    const frame=document.getElementById('frame');
-    document.querySelectorAll('.js-preview').forEach(el=>{
-      el.addEventListener('click',ev=>{
-        ev.preventDefault();
-        frame.src=el.getAttribute('href');
-        if(typeof viewer.showModal==='function')viewer.showModal();
-        else window.open(el.getAttribute('href'),'_blank');
-      });
-    });
     document.querySelectorAll('.js-copy').forEach(btn=>{
       btn.addEventListener('click',async()=>{
         try{
