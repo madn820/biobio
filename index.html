@@ -274,6 +274,12 @@ function renderRoom(data){
   pX.textContent = data.players?.X?.name || '—';
   pO.textContent = data.players?.O?.name || '—';
 
+  // If both players are present but status still waiting, promote to playing (self-heal)
+  const bothPresent = !!(data.players?.X && data.players?.O);
+  if(firebaseReady && data.state?.status === 'waiting' && bothPresent && roomId){
+    roomRef(roomId).child('state/status').set('playing');
+  }
+
   // Build board UI
   boardEl.innerHTML = '';
   const b = (data.state?.board || '---------').split('');
@@ -307,8 +313,7 @@ function renderRoom(data){
   statusArea.appendChild(div);
 
   // Enable/disable New Game
-  const both = !!(data.players?.X && data.players?.O);
-  newGameBtn.disabled = !both;
+  newGameBtn.disabled = !bothPresent;
 }
 
 function roleText(mark){
